@@ -9,6 +9,7 @@ use Exception;
  *
  * @package App\Core\Exception
  */
-class InvalidResponseException extends Exception{
+class InvalidResponseException extends Exception
+{
 
 }

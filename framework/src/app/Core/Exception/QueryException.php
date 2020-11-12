@@ -5,11 +5,11 @@ namespace App\Core\Exception;
 use Exception;
 
 /**
- * Class RouteNotFoundException
+ * Class QueryException
  *
  * @package App\Core\Exception
  */
-class RouteNotFoundException extends Exception
+class QueryException extends Exception
 {
 
 }

@@ -14,7 +14,7 @@ class ExampleController extends Controller
     /**
      * Returns a generic welcome view.
      *
-     * @return \App\Core\View
+     * @return \App\Core\Response\View
      */
     public function welcome()
     {

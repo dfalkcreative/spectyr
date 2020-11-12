@@ -9,6 +9,7 @@ use Exception;
  *
  * @package App\Core\Exception
  */
-class InvalidControllerException extends Exception{
+class InvalidControllerException extends Exception
+{
 
 }

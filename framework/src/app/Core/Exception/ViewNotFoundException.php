@@ -9,6 +9,7 @@ use Exception;
  *
  * @package App\Core\Exception
  */
-class ViewNotFoundException extends Exception{
+class ViewNotFoundException extends Exception
+{
 
 }

@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Core;
+namespace App\Core\Response;
 
 use Closure;
+use App\Core\Response;
 use App\Core\Exception\ViewNotFoundException;
 
 /**
@@ -39,14 +40,6 @@ class View extends Response
 
 
     /**
-     * The values used for the template.
-     *
-     * @var
-     */
-    protected $data;
-
-
-    /**
      * The sections of the template.
      *
      * @var array
@@ -64,6 +57,9 @@ class View extends Response
     {
         $this->setPath($path);
         $this->setData($data);
+        $this->setHeaders([
+            'Content-Type' => 'text/html'
+        ]);
     }
 
 
@@ -74,6 +70,8 @@ class View extends Response
      */
     public function render()
     {
+        parent::render();
+
         // Verify that the template exists.
         if (!file_exists($this->getFullPath())) {
             throw new ViewNotFoundException(
@@ -218,30 +216,5 @@ class View extends Response
     public function getPath()
     {
         return $this->path;
-    }
-
-
-    /**
-     * Used to configure the variables for the view.
-     *
-     * @param array $data
-     * @return $this
-     */
-    public function setData($data = [])
-    {
-        $this->data = $data;
-
-        return $this;
-    }
-
-
-    /**
-     * Returns the variables used for the template.
-     *
-     * @return $this
-     */
-    public function getData()
-    {
-        return $this->data;
     }
 }
