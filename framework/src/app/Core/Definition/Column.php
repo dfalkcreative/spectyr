@@ -49,6 +49,46 @@ class Column
 
 
     /**
+     * Used to convert the set type into one that SQL understands.
+     */
+    public function getSqlType()
+    {
+        switch(strtolower($this->getType())){
+            case 'date':
+            case 'datetime':
+                $type = 'datetime';
+                break;
+
+            case 'currency':
+            case 'decimal':
+            case 'float':
+                $type = 'decimal';
+                break;
+
+            case 'integer':
+                $type = 'int';
+                break;
+
+            case 'text':
+                $type = 'text';
+                break;
+
+            case 'longtext':
+                $type = 'longtext';
+                break;
+
+            case 'varchar':
+            case 'string':
+            default:
+                $type = 'varchar(191)';
+                break;
+        }
+
+        return $type;
+    }
+
+
+    /**
      * Returns the default value.
      *
      * @return mixed

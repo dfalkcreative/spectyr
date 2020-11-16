@@ -65,6 +65,21 @@ class Json extends Response
      */
     public function getData()
     {
-        return $this->data;
+        $response = [];
+
+        if(!has($this->data)){
+            return $response;
+        }
+
+        foreach($this->data as $element){
+            if(is_object($element) && method_exists($element, 'toArray')){
+                $response[] = $element->toArray();
+                continue;
+            }
+
+            $response[] = $element;
+        }
+
+        return $response;
     }
 }

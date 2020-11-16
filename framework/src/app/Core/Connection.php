@@ -65,11 +65,11 @@ class Connection
      */
     public function __construct()
     {
-        $this->setUser(env('DB_USER', 'root'));
-        $this->setHost(env('DB_HOST', 'localhost'));
-        $this->setCharset(env('DB_CHARSET', 'utf8mb4'));
-        $this->setPassword(env('DB_PASS', ''));
-        $this->setDatabase(env('DB_NAME', 'master'));
+        $this->setUser(env(App::ENVIRONMENT_DB_USER, 'root'))
+            ->setHost(env(App::ENVIRONMENT_DB_HOST, 'localhost'))
+            ->setCharset(env(App::ENVIRONMENT_DB_CHARSET, 'utf8mb4'))
+            ->setDatabase(env(App::ENVIRONMENT_DB_NAME, 'master'))
+            ->setPassword(env(App::ENVIRONMENT_DB_PASS, ''));
     }
 
 
@@ -281,7 +281,7 @@ class Connection
 
         if ($statement->execute($bindings) === false) {
             throw new Exception($statement->errorInfo());
-        };
+        }
 
         while ($row = $statement->fetch()) {
             $results[] = $row;

@@ -19,6 +19,7 @@ class Server
      * @var array
      */
     public $fields = [
+        'argv' => '',
         'REDIRECT_URL' => '',
         'DOCUMENT_ROOT' => '',
         'REDIRECT_STATUS' => '',
@@ -41,7 +42,19 @@ class Server
      */
     public function getDocumentRoot()
     {
-        return $this->data['DOCUMENT_ROOT'];
+        return $this->data['DOCUMENT_ROOT'] ?: getcwd();
+    }
+
+
+    /**
+     * Returns a directory path relative to the document root.
+     *
+     * @param string $path
+     * @return string
+     */
+    public function getPath($path = '')
+    {
+        return $this->getDocumentRoot() . DIRECTORY_SEPARATOR . $path;
     }
 
 
@@ -64,5 +77,16 @@ class Server
     public function getRedirectStatus()
     {
         return $this->data['REDIRECT_STATUS'];
+    }
+
+
+    /**
+     * Returns any arguments passed to the server.
+     *
+     * @return mixed
+     */
+    public function getArguments()
+    {
+        return $this->data['argv'];
     }
 }

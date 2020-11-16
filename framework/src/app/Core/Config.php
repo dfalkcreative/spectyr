@@ -19,10 +19,12 @@ class Config
 
     /**
      * Config constructor.
+     *
+     * @param string $directory
      */
-    public function __construct()
+    public function __construct($directory = '')
     {
-
+        $this->getFromDirectory($directory);
     }
 
 
@@ -30,17 +32,18 @@ class Config
      * Reads all of the files from a directory.
      *
      * @param $directory
+     * @return Config
      */
-    public function getFromDirectory($directory)
+    public function getFromDirectory($directory = '')
     {
-        if (!file_exists($directory) || !is_dir($directory)) {
-            return;
+        if (!$directory || !file_exists($directory) || !is_dir($directory)) {
+            return $this;
         }
 
         $files = scandir($directory);
 
         if (!has($files)) {
-            return;
+            return $this;
         }
 
         // Read each JSON configuration file.
@@ -57,6 +60,8 @@ class Config
 
             $this->files[$file->getName()] = $file->readFromJson();
         }
+
+        return $this;
     }
 
 

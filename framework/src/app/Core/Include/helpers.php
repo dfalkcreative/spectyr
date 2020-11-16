@@ -1,6 +1,8 @@
 <?php
 
+use App\Core\App;
 use App\Core\Query;
+use App\Core\Model;
 use App\Core\Response\Json;
 use App\Core\Response\View;
 
@@ -65,6 +67,17 @@ function has($variable)
 
 
 /**
+ * Returns the configured application instance.
+ *
+ * @return App
+ */
+function app()
+{
+    return App::getInstance();
+}
+
+
+/**
  * Returns a new view instance.
  *
  * @param $template
@@ -92,12 +105,22 @@ function json($data)
 /**
  * Returns a new query instance.
  *
- * @param $model
  * @return Query
  */
-function query($model = '')
+function query()
 {
     return new Query();
+}
+
+
+/**
+ * Returns a new model instance.
+ *
+ * @param string $name
+ */
+function model($name = '')
+{
+    return new Model($name);
 }
 
 
@@ -119,7 +142,7 @@ function dump($contents)
  */
 function dd($contents)
 {
-    var_dump($contents);
+    echo "<pre>" . print_r($contents) . "</pre>";
     die();
 }
 

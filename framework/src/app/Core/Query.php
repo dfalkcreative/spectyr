@@ -17,7 +17,7 @@ class Query
      *
      * @var string
      */
-    protected $table = '';
+    protected $target = '';
 
 
     /**
@@ -85,7 +85,7 @@ class Query
      */
     public function table($table = '')
     {
-        $this->table = $table;
+        $this->target = $table;
 
         return $this;
     }
@@ -127,6 +127,31 @@ class Query
     public function getBindings()
     {
         return $this->bindings;
+    }
+
+
+    /**
+     * Returns the configured target.
+     *
+     * @return string
+     */
+    public function getTarget()
+    {
+        return $this->target;
+    }
+
+
+    /**
+     * Used to register a new binding to the front.
+     *
+     * @param $value
+     * @return $this
+     */
+    public function prependBinding($value)
+    {
+        array_unshift($this->bindings, $value);
+
+        return $this;
     }
 
 
@@ -298,7 +323,32 @@ class Query
             implode(', ', $this->select) : '*';
 
         // Select the fields.
-        return "select {$fields} from {$this->table}";
+        return "select {$fields} from {$this->target}";
+    }
+
+
+    /**
+     * Returns the joined select statement.
+     *
+     * @param array $values
+     * @return string
+     */
+    public function getUpdateStatement($values = [])
+    {
+        $original = $this->getBindings();
+        $this->setBindings([]);
+        $statement = [];
+
+        foreach ($values as $column => $value) {
+            $statement[] = "$column = ?";
+            $this->addBinding($value);
+        }
+
+        $this->setBindings(array_merge($this->getBindings(), $original));
+
+        // Select the fields.
+        $statement = implode(', ', $statement);
+        return "update {$this->target} set {$statement}";
     }
 
 
@@ -355,6 +405,78 @@ class Query
 
 
     /**
+     * Used to insert a new record.
+     *
+     * @param array $values
+     * @return bool
+     * @throws QueryException
+     */
+    public function insert($values = [])
+    {
+        // Verify that we have values to insert.
+        if (!has($values)) {
+            return false;
+        }
+
+        // Build out the appropriate SQL string.
+        $columns = implode(', ', array_keys($values));
+        $bindings = implode(', ', array_map(function() {
+            return '?';
+        }, $values));
+
+        try {
+            (new Connection())
+                ->statement("insert into {$this->target} ($columns) values ($bindings)", array_values($values));
+
+            return true;
+        } catch (Exception $e) {
+            throw new QueryException($e->getMessage());
+        }
+    }
+
+
+    /**
+     * Used to perform an update.
+     *
+     * @param array $values
+     * @throws QueryException
+     */
+    public function update($values = [])
+    {
+        $statements = [
+            $this->getUpdateStatement($values),
+            $this->getConditionalStatement()
+        ];
+
+        try {
+            (new Connection())
+                ->statement(trim(implode(' ', $statements)), $this->getBindings());
+        } catch (Exception $e) {
+            throw new QueryException($e->getMessage());
+        }
+    }
+
+
+    /**
+     * Used to create a new entry.
+     *
+     * @param array $values
+     * @return array
+     * @throws QueryException
+     */
+    public function create($values = [])
+    {
+        if ($this->insert($values)) {
+            return query()->table($this->target)
+                ->orderBy('id', 'desc')
+                ->first();
+        }
+
+        return [];
+    }
+
+
+    /**
      * Used to retrieve the results.
      *
      * @return array
@@ -363,9 +485,53 @@ class Query
     public function get()
     {
         try {
-            return (new Connection())->setQuery($this)->execute();
+            $collection = [];
+            $results = (new Connection())
+                ->setQuery($this)
+                ->execute();
+
+            if (has($results)) {
+                foreach ($results as $result) {
+                    $collection[] = $this->instance($result);
+                }
+            }
+
+            return $collection;
         } catch (Exception $e) {
             throw new QueryException($e->getMessage());
         }
+    }
+
+
+    /**
+     * Used to retrieve the results.
+     *
+     * @return array
+     * @throws QueryException
+     */
+    public function first()
+    {
+        try {
+            $results = (new Connection())
+                ->setQuery($this->limit(1))
+                ->execute();
+
+            // Return an individual result.
+            return has($results) ? $this->instance(array_shift($results)) : [];
+        } catch (Exception $e) {
+            throw new QueryException($e->getMessage());
+        }
+    }
+
+
+    /**
+     * Used to map query results.
+     *
+     * @param array $attributes
+     * @return array
+     */
+    public function instance($attributes = [])
+    {
+        return $attributes;
     }
 }

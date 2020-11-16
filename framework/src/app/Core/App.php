@@ -13,9 +13,37 @@ use App\Core\Definition\Server;
 class App
 {
     /**
+     * The migration command prefix.
+     */
+    const COMMAND_MIGRATE = 'migrate';
+
+
+    /**
+     * Indicates the schema target to reference.
+     */
+    const CONFIGURATION_SCHEMA = 'schema';
+
+
+    /**
+     * Indicates the assigned directory for configuration files.
+     */
+    const DIRECTORY_CONFIGURATION = 'config';
+
+
+    /**
+     * The environment variable keys.
+     */
+    const ENVIRONMENT_DB_NAME = 'DB_NAME';
+    const ENVIRONMENT_DB_HOST = 'DB_HOST';
+    const ENVIRONMENT_DB_USER = 'DB_USER';
+    const ENVIRONMENT_DB_PASS = 'DB_PASS';
+    const ENVIRONMENT_DB_CHARSET = 'DB_CHARSET';
+
+
+    /**
      * The application instance.
      *
-     * @var
+     * @var App
      */
     public static $instance;
 
@@ -29,9 +57,17 @@ class App
 
 
     /**
+     * The logger instance.
+     *
+     * @var Logger
+     */
+    protected $logger;
+
+
+    /**
      * The configuration instance.
      *
-     * @var
+     * @var Config
      */
     protected $config;
 
@@ -39,7 +75,7 @@ class App
     /**
      * The server definition.
      *
-     * @var
+     * @var Server
      */
     protected $server;
 
@@ -47,9 +83,25 @@ class App
     /**
      * The database migrator.
      *
-     * @var
+     * @var Migrator
      */
     protected $migrator;
+
+
+    /**
+     * The database map file.
+     *
+     * @var Schema
+     */
+    protected $schema;
+
+
+    /**
+     * The console handler for the application.
+     *
+     * @var Console
+     */
+    protected $console;
 
 
     /**
@@ -57,21 +109,26 @@ class App
      */
     public function __construct()
     {
+        // Bootstrap any dependencies.
         $this->setServer(new Server())
+            ->setConsole(new Console())
+            ->setLogger(new Logger())
             ->setRouter(new Router())
-            ->setConfig(new Config())
-            ->setMigrator(new Migrator())
-            ->setEnvironment();
+            ->setConfig(new Config(
+                $this->getServer()->getPath(self::DIRECTORY_CONFIGURATION)))
+            ->setSchema(new Schema(
+                $this->getConfig()->getFile(self::CONFIGURATION_SCHEMA)))
+            ->setMigrator(new Migrator(
+                $this->getSchema()
+            ))->setEnvironment();
 
-        // Read configuration data.
-        $this->getConfig()->getFromDirectory(
-            $this->getServer()->getDocumentRoot() . DIRECTORY_SEPARATOR . 'config'
-        );
-
-        // Migrate the application.
-        $this->getMigrator()->setSchema(
-            $this->getConfig()->alias('schema', Schema::class)
-        )->build();
+        // Build out any additional commands.
+        $this->getConsole()
+            ->addCommand(self::COMMAND_MIGRATE, (new Command())
+                ->setAction(function() {
+                    app()->getMigrator()->build();
+                })
+            );
 
         // Assign the instance.
         static::setInstance($this);
@@ -90,6 +147,56 @@ class App
         }
 
         return $this;
+    }
+
+
+    /**
+     * Used to assign a database definition to the application.
+     *
+     * @param Schema $schema
+     * @return $this
+     */
+    public function setSchema(Schema $schema)
+    {
+        $this->schema = $schema;
+
+        return $this;
+    }
+
+
+    /**
+     * Returns the configured schema.
+     *
+     * @return Schema
+     */
+    public function getSchema()
+    {
+        return $this->schema;
+    }
+
+
+    /**
+     * Used to assign a logger instance.
+     *
+     * @param Logger $logger
+     * @return $this
+     */
+    public function setLogger(Logger $logger)
+    {
+        $this->logger = $logger;
+
+        return $this;
+    }
+
+
+    /**
+     * Returns the logger instance.
+     *
+     * @return Logger
+     */
+    public function getLogger()
+    {
+        return $this->logger;
     }
 
 
@@ -115,6 +222,31 @@ class App
     public function getMigrator()
     {
         return $this->migrator;
+    }
+
+
+    /**
+     * Used to configure the console instance.
+     *
+     * @param Console $console
+     * @return $this
+     */
+    public function setConsole(Console $console)
+    {
+        $this->console = $console;
+
+        return $this;
+    }
+
+
+    /**
+     * Returns the assigned console handler.
+     *
+     * @return Console
+     */
+    public function getConsole()
+    {
+        return $this->console;
     }
 
 

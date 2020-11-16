@@ -96,4 +96,19 @@ class Schema
             array_get($this->data['tables'], $table, [])
         );
     }
+
+
+    /**
+     * Used to assign a new table to the schema.
+     *
+     * @param $key
+     * @param array $definition
+     * @return $this
+     */
+    public function addTable($key, $definition = [])
+    {
+        $this->data['tables'][$key] = $definition;
+
+        return $this;
+    }
 }

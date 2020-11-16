@@ -83,6 +83,18 @@ class Table
 
 
     /**
+     * Indicates whether or not the column exists.
+     *
+     * @param $column
+     * @return bool
+     */
+    public function hasColumn($column)
+    {
+        return array_key_exists($column, $this->data['columns']);
+    }
+
+
+    /**
      * Returns a specific option for the model.
      *
      * @param $column
@@ -91,7 +103,7 @@ class Table
     public function getColumn($column)
     {
         return new Column(
-            array_get($this->data['properties'], $column, [])
+            array_get($this->data['columns'], $column, [])
         );
     }
 }
