@@ -4,6 +4,15 @@
 
 The Spectyr Framework is an ultra lightweight MVC framework for PHP and VueJS.
 
+Some useful aspects to this idea are:
+
+- Routing and Controller Support.
+- Inclusive, yet easy-to-use ORM system.
+- Simple View Templating.
+- Middleware Support. 
+- Basic Session Management.
+- Additional Response Types for JSON APIs, File Responses, and more.
+
 ### Installation Steps
 
 ##### Use the following steps for new project installations.
