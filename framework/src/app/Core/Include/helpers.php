@@ -3,6 +3,7 @@
 use App\Core\App;
 use App\Core\Query;
 use App\Core\Model;
+use App\Core\Debug;
 use App\Core\Response\Json;
 use App\Core\Response\View;
 
@@ -114,6 +115,17 @@ function query()
 
 
 /**
+ * Returns the global request.
+ *
+ * @return \App\Core\Request
+ */
+function request()
+{
+    return App::getInstance()->getRouter()->getRequest();
+}
+
+
+/**
  * Returns a new model instance.
  *
  * @param string $name
@@ -131,7 +143,7 @@ function model($name = '')
  */
 function dump($contents)
 {
-    var_dump($contents);
+    App::debugger()->print($contents);
 }
 
 
@@ -142,7 +154,7 @@ function dump($contents)
  */
 function dd($contents)
 {
-    echo "<pre>" . print_r($contents) . "</pre>";
+    App::debugger()->print($contents);
     die();
 }
 

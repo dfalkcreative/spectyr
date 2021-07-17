@@ -18,6 +18,8 @@ class ExampleController extends Controller
      */
     public function welcome()
     {
-        return view('controllers/example/welcome');
+        return view('controllers/example/welcome', [
+            'variable' => [1,2,3]
+        ]);
     }
 }

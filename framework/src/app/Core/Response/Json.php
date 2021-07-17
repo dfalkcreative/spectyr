@@ -71,13 +71,13 @@ class Json extends Response
             return $response;
         }
 
-        foreach($this->data as $element){
+        foreach($this->data as $key => $element){
             if(is_object($element) && method_exists($element, 'toArray')){
-                $response[] = $element->toArray();
+                $response[$key] = $element->toArray();
                 continue;
             }
 
-            $response[] = $element;
+            $response[$key] = $element;
         }
 
         return $response;

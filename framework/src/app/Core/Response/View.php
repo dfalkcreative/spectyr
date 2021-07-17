@@ -55,11 +55,22 @@ class View extends Response
      */
     public function __construct($path = '', $data = [])
     {
-        $this->setPath($path);
-        $this->setData($data);
-        $this->setHeaders([
-            'Content-Type' => 'text/html'
-        ]);
+        $this->setPath($path)
+            ->setData($data)
+            ->setHeaders([
+                'Content-Type' => 'text/html'
+            ]);
+    }
+
+
+    /**
+     * Indicates whether or not the view exists.
+     *
+     * @return bool
+     */
+    public function exists()
+    {
+        return file_exists($this->getFullPath());
     }
 
 
@@ -73,7 +84,7 @@ class View extends Response
         parent::render();
 
         // Verify that the template exists.
-        if (!file_exists($this->getFullPath())) {
+        if (!$this->exists()) {
             throw new ViewNotFoundException(
                 __("No view exists at {$this->getFullPath()}.")
             );
@@ -115,6 +126,19 @@ class View extends Response
 
 
     /**
+     * Yields a section content.
+     *
+     * @param $section
+     * @param Closure $callback
+     * @return View
+     */
+    public function yield($section, Closure $callback)
+    {
+        return $this->setSection($section, $callback);
+    }
+
+
+    /**
      * Used to append new contents to a section.
      *
      * @param $section
@@ -135,6 +159,18 @@ class View extends Response
 
 
     /**
+     * Shorthand section yield.
+     *
+     * @param $section
+     * @throws ViewNotFoundException
+     */
+    public function section($section)
+    {
+        $this->getSection($section);
+    }
+
+
+    /**
      * Used to render child sections.
      *
      * @param $section
@@ -148,7 +184,7 @@ class View extends Response
         }
 
         // Verify that the section is being utilized.
-        if(!has($this->getSections()[$section])){
+        if (!has($this->getSections()[$section])) {
             return;
         }
 
@@ -170,7 +206,7 @@ class View extends Response
 
 
     /**
-     * Used to extends from a layout.
+     * Used to extend from a layout.
      *
      * @param $layout
      * @return View
@@ -216,5 +252,21 @@ class View extends Response
     public function getPath()
     {
         return $this->path;
+    }
+
+
+    /**
+     * Renders the view.
+     *
+     * @throws ViewNotFoundException
+     */
+    public function __toString()
+    {
+        ob_start();
+        $this->render();
+        $contents = ob_get_contents();
+        ob_end_clean();
+
+        return $contents;
     }
 }

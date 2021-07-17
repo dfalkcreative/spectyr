@@ -105,13 +105,22 @@ class App
 
 
     /**
+     * The debugger to use.
+     *
+     * @var Debugger
+     */
+    protected $debugger;
+
+
+    /**
      * App constructor.
      */
     public function __construct()
     {
         // Bootstrap any dependencies.
-        $this->setServer(new Server())
+        $this->setDebugger(new Debug())
             ->setConsole(new Console())
+            ->setServer(new Server())
             ->setLogger(new Logger())
             ->setRouter(new Router())
             ->setConfig(new Config(
@@ -125,7 +134,7 @@ class App
         // Build out any additional commands.
         $this->getConsole()
             ->addCommand(self::COMMAND_MIGRATE, (new Command())
-                ->setAction(function() {
+                ->setAction(function () {
                     app()->getMigrator()->build();
                 })
             );
@@ -201,6 +210,31 @@ class App
 
 
     /**
+     * Assigns the debugger.
+     *
+     * @param Debug $debugger
+     * @return $this
+     */
+    public function setDebugger(Debug $debugger)
+    {
+        $this->debugger = $debugger;
+
+        return $this;
+    }
+
+
+    /**
+     * Returns the debugger.
+     *
+     * @return Debugger
+     */
+    public function getDebugger()
+    {
+        return $this->debugger;
+    }
+
+
+    /**
      * Used to assign a migrator to the application.
      *
      * @param Migrator $migrator
@@ -217,7 +251,7 @@ class App
     /**
      * Returns the configured migrator.
      *
-     * @return mixed
+     * @return Migrator
      */
     public function getMigrator()
     {
@@ -344,5 +378,82 @@ class App
     public static function getInstance()
     {
         return self::$instance;
+    }
+
+
+    /**
+     * Returns the configured logger.
+     *
+     * @return Logger
+     */
+    public static function logger()
+    {
+        return self::getInstance()->getLogger();
+    }
+
+
+    /**
+     * Returns the configured console handler.
+     *
+     * @return Console
+     */
+    public static function console()
+    {
+        return self::getInstance()->getConsole();
+    }
+
+
+    /**
+     * Returns the configured server handler.
+     *
+     * @return Server
+     */
+    public static function server()
+    {
+        return self::getInstance()->getServer();
+    }
+
+
+    /**
+     * Returns the configured router.
+     *
+     * @return Router
+     */
+    public static function router()
+    {
+        return self::getInstance()->getRouter();
+    }
+
+
+    /**
+     * Returns the configuration instance.
+     *
+     * @return Config
+     */
+    public static function config()
+    {
+        return self::getInstance()->getConfig();
+    }
+
+
+    /**
+     * Returns the migrator instance.
+     *
+     * @return Migrator
+     */
+    public static function migrator()
+    {
+        return self::getInstance()->getMigrator();
+    }
+
+
+    /**
+     * Returns the debugger instance.
+     *
+     * @return Debugger
+     */
+    public static function debugger()
+    {
+        return self::getInstance()->getDebugger();
     }
 }

@@ -303,6 +303,9 @@ class Connection
             return [];
         }
 
-        return $this->statement($this->getQuery()->getStatement(), $this->getQuery()->getBindings());
+        return $this->statement(
+            $this->getQuery()->getStatement(),
+            $this->getQuery()->getBindings()
+        );
     }
 }

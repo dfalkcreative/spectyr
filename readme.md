@@ -2,9 +2,9 @@
 
 ### Overview
 
-The Spectyr Framework is an ultra lightweight MVC framework for PHP and VueJS.
+The Spectyr Framework is an ultra lightweight MVC framework for PHP.
 
-Some useful aspects to this idea are:
+**Some useful aspects to this idea are:**
 
 - Routing and Controller Support.
 - Inclusive, yet easy-to-use ORM system.
@@ -46,5 +46,73 @@ root directory accordingly).
     npm run production
     ```
 
-7. Navigate to the project host via the browser.
+4. Navigate to the project host via the browser.
 
+### Views / Layouts
+
+The framework supports a custom templating system. In order to access, you'll want
+to first verify that a `resources/views` directory exists within your project. Afterwards,
+you can start creating new views as needed.
+
+```html
+<!doctype html>
+<html lang="en">
+    <head>
+        <?= $this->getSection('head'); ?>
+    </head>
+
+    <body>
+        <?= $this->getSection('body'); ?>
+    </body>
+</html>
+```
+
+To extend existing layouts, you can reference the layout method, pointing to an
+existing layout.
+
+**Extension Example**
+
+```html
+$this->layout('layouts/master')
+    ->setSection('body', function(){
+        ?>
+        <div>Hello World!</div>
+        <?php
+    })->render();
+```
+
+In both examples, `$this` will refer to your response object. Variables passed in from
+your controllers are also accessible by name, as provided by your controller responses.
+
+**Example Controller**
+
+```php
+/**
+ * Class ExampleController
+ *
+ * @package App\Controllers
+ */
+class ExampleController extends Controller
+{
+    /**
+     * Returns a generic welcome view.
+     *
+     * @return \App\Core\Response\View
+     */
+    public function welcome()
+    {
+        return view('controllers/example/welcome', [
+            'greeting' => 'Hello World!'
+        ]);
+    }
+}
+```
+
+**Example Layout**
+
+```html
+$this->layout('layouts/master')
+    ->setSection('body', function() use ($greeting){
+        <?= $greeting ?>
+    })->render();
+```

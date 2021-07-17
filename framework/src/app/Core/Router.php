@@ -127,8 +127,6 @@ class Router
 
     /**
      * Used to execute a route against the current URI.
-     *
-     * @throws ViewNotFoundException
      */
     public function getResponse()
     {
@@ -151,9 +149,13 @@ class Router
             $response->render();
 
         } catch (Exception $exception) {
-            view(self::EXCEPTION_TEMPLATE, [
+            $view = view(self::EXCEPTION_TEMPLATE, [
                 'exception' => $exception
-            ])->render();
+            ]);
+
+            if($view->exists()){
+                $view->render();
+            }
         }
     }
 }
