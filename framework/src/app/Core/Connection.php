@@ -21,6 +21,14 @@ class Connection
 
 
     /**
+     * The host port.
+     *
+     * @var string
+     */
+    protected $port;
+
+
+    /**
      * The database to connect to.
      *
      * @var string
@@ -67,6 +75,7 @@ class Connection
     {
         $this->setUser(env(App::ENVIRONMENT_DB_USER, 'root'))
             ->setHost(env(App::ENVIRONMENT_DB_HOST, 'localhost'))
+            ->setPort(env(App::ENVIRONMENT_DB_PORT, '3306'))
             ->setCharset(env(App::ENVIRONMENT_DB_CHARSET, 'utf8mb4'))
             ->setDatabase(env(App::ENVIRONMENT_DB_NAME, 'master'))
             ->setPassword(env(App::ENVIRONMENT_DB_PASS, ''));
@@ -95,6 +104,31 @@ class Connection
     public function getHost()
     {
         return $this->host;
+    }
+
+
+    /**
+     * Returns the connection port.
+     *
+     * @param string $port
+     * @return $this
+     */
+    public function setPort($port = '')
+    {
+        $this->port = $port;
+
+        return $this;
+    }
+
+
+    /**
+     * Returns the connection port.
+     *
+     * @return string
+     */
+    public function getPort()
+    {
+        return $this->port;
     }
 
 
@@ -230,7 +264,7 @@ class Connection
      */
     public function getConnectionString()
     {
-        return "mysql:host={$this->getHost()};dbname={$this->getDatabase()};charset={$this->getCharset()}";
+        return "mysql:host={$this->getHost()};dbname={$this->getDatabase()};charset={$this->getCharset()};port={$this->getPort()};";
     }
 
 

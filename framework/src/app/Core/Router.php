@@ -2,6 +2,7 @@
 
 namespace App\Core;
 
+use Closure;
 use Exception;
 use App\Core\Exception\ViewNotFoundException;
 use App\Core\Exception\RouteNotFoundException;
@@ -29,6 +30,14 @@ class Router
 
 
     /**
+     * Handles specific exception mappings.
+     *
+     * @var array
+     */
+    protected $exceptions = [];
+
+
+    /**
      * The request instance.
      *
      * @var Request
@@ -42,6 +51,81 @@ class Router
     public function __construct()
     {
         $this->setRequest(new Request());
+    }
+
+
+    /**
+     * Redirects to another URL.
+     *
+     * @param string $url
+     */
+    public function redirect($url = '')
+    {
+        header("Location: $url");
+        die();
+    }
+
+
+    /**
+     * Registers a new exception.
+     *
+     * @param $class
+     * @param Closure $callback
+     * @return $this
+     */
+    public function addException($class, Closure $callback)
+    {
+        $this->exceptions[$class] = $callback;
+
+        return $this;
+    }
+
+
+    /**
+     * Registers a series of exceptions.
+     *
+     * @param array $exceptions
+     * @return $this
+     */
+    public function addExceptions($exceptions = [])
+    {
+        foreach ($exceptions as $class => $callback) {
+            if (!$callback instanceof Closure) {
+                continue;
+            }
+
+            $this->addException($class, $callback);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * Indicates whether or not an exception is defined.
+     *
+     * @param $class
+     * @return bool
+     */
+    public function hasException($class)
+    {
+        return isset($this->exceptions[$class]);
+    }
+
+
+    /**
+     * Returns specific exception functionality.
+     *
+     * @param $class
+     * @return mixed
+     */
+    public function getException($class)
+    {
+        if ($this->hasException($class)) {
+            return $this->exceptions[$class];
+        }
+
+        return false;
     }
 
 
@@ -149,11 +233,17 @@ class Router
             $response->render();
 
         } catch (Exception $exception) {
+            $callback = $this->getException(get_class($exception));
+
+            if ($callback instanceof Closure) {
+                return $callback($exception);
+            }
+
             $view = view(self::EXCEPTION_TEMPLATE, [
                 'exception' => $exception
             ]);
 
-            if($view->exists()){
+            if ($view->exists()) {
                 $view->render();
             }
         }

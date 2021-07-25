@@ -18,6 +18,14 @@ class Request
 
 
     /**
+     * The input data.
+     *
+     * @var array
+     */
+    protected $data = [];
+
+
+    /**
      * Request constructor.
      */
     public function __construct()
@@ -67,6 +75,17 @@ class Request
 
 
     /**
+     * Returns the entire request collection.
+     *
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
+
+    /**
      * Returns a global request parameter.
      *
      * @param $key
@@ -75,6 +94,15 @@ class Request
      */
     public function get($key, $default = '')
     {
-        return get($_GET, $key, get($_POST, $key, get($_SERVER, $key, $default)));
+        if (!$this->data) {
+            $_IN = json_decode(file_get_contents('php://input'), true) ?: [];
+
+            $this->data = array_merge($_SERVER, $this->data);
+            $this->data = array_merge($_POST, $this->data);
+            $this->data = array_merge($_GET, $this->data);
+            $this->data = array_merge($_IN, $this->data);
+        }
+
+        return get($this->data, $key, $default);
     }
 }

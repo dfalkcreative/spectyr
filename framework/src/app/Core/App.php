@@ -35,6 +35,7 @@ class App
      */
     const ENVIRONMENT_DB_NAME = 'DB_NAME';
     const ENVIRONMENT_DB_HOST = 'DB_HOST';
+    const ENVIRONMENT_DB_PORT = 'DB_PORT';
     const ENVIRONMENT_DB_USER = 'DB_USER';
     const ENVIRONMENT_DB_PASS = 'DB_PASS';
     const ENVIRONMENT_DB_CHARSET = 'DB_CHARSET';
@@ -81,6 +82,14 @@ class App
 
 
     /**
+     * The session handler.
+     *
+     * @var Session
+     */
+    protected $session;
+
+
+    /**
      * The database migrator.
      *
      * @var Migrator
@@ -119,6 +128,7 @@ class App
     {
         // Bootstrap any dependencies.
         $this->setDebugger(new Debug())
+            ->setSession(new Session())
             ->setConsole(new Console())
             ->setServer(new Server())
             ->setLogger(new Logger())
@@ -156,6 +166,31 @@ class App
         }
 
         return $this;
+    }
+
+
+    /**
+     * Used to assign a session handler to the application.
+     *
+     * @param Session $session
+     * @return $this
+     */
+    public function setSession(Session $session)
+    {
+        $this->session = $session;
+
+        return $this;
+    }
+
+
+    /**
+     * Returns the configured session handler.
+     *
+     * @return Session
+     */
+    public function getSession()
+    {
+        return $this->session;
     }
 
 
@@ -400,6 +435,17 @@ class App
     public static function console()
     {
         return self::getInstance()->getConsole();
+    }
+
+
+    /**
+     * Returns the session handler.
+     *
+     * @return Session
+     */
+    public static function session()
+    {
+        return self::getInstance()->getSession();
     }
 
 

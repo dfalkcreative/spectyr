@@ -79,6 +79,17 @@ function app()
 
 
 /**
+ * Redirect to another page.
+ *
+ * @param string $url
+ */
+function redirect($url = '')
+{
+    return app()->getRouter()->redirect($url);
+}
+
+
+/**
  * Returns a new view instance.
  *
  * @param $template
