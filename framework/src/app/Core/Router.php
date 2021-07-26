@@ -205,7 +205,44 @@ class Router
      */
     public function getCurrentRoute()
     {
-        return get($this->getRoutes(), $this->getRequest()->getUri());
+        $current = array_filter(explode('/', $this->getRequest()->getUri()));
+        $matched = null;
+        $parameters = [];
+
+        // Determine which route we're accessing.
+        foreach($this->getRoutes() as $uri => $route){
+            $parameters = [];
+            $segments = array_filter(explode('/', $uri));
+            $valid = true;
+
+            if(count($segments) !== count($current)){
+                continue;
+            }
+
+            // Parse each individual segment to identify parameters.
+            foreach($segments as $i => $segment){
+                $segment = trim($segment);
+
+                if(substr($segment, 0, 1) === ':'){
+                    $parameters[substr($segment, 1)] = $current[$i];
+                    continue;
+                }
+
+                if($segments[$i] !== $current[$i]){
+                    $valid = false;
+                    break;
+                }
+            }
+
+            // Check for a match.
+            if($valid){
+                $matched = $route;
+                break;
+            }
+        }
+
+        return $matched instanceof Route ?
+            $matched->setParameters($parameters) : $matched;
     }
 
 

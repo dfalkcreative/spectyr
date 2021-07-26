@@ -16,8 +16,8 @@ class Debug
      */
     public function print($variable)
     {
-        echo '<pre>';
-        die(var_dump($variable));
+        echo '<pre style="background: #eee;">';
+        echo(var_dump($variable));
         echo '</pre>';
 
         switch (true) {

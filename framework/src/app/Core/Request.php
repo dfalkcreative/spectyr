@@ -53,7 +53,7 @@ class Request
      */
     public function getPreparedUri($uri)
     {
-        // Ignore the URI.
+        // Ignore any request parameters.
         $uri = explode('?', $uri)[0];
 
         // Handle trailing slash.

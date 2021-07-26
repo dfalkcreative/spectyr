@@ -30,6 +30,14 @@ class Route
 
 
     /**
+     * The route parameters for the request.
+     *
+     * @var array
+     */
+    protected $parameters = [];
+
+
+    /**
      * Route constructor.
      *
      * @param string $controller
@@ -92,6 +100,42 @@ class Route
 
 
     /**
+     * Assigns the route parameters.
+     *
+     * @param array $parameters
+     * @return $this
+     */
+    public function setParameters($parameters = [])
+    {
+        $this->parameters = $parameters;
+
+        return $this;
+    }
+
+
+    /**
+     * Returns the parameters.
+     *
+     * @return array
+     */
+    public function getParameters()
+    {
+        return $this->parameters;
+    }
+
+
+    /**
+     * Returns only the parameter values.
+     *
+     * @return array
+     */
+    public function getParameterValues()
+    {
+        return array_values($this->getParameters());
+    }
+
+
+    /**
      * Used to execute the configured controller.
      *
      * @return mixed
@@ -107,7 +151,7 @@ class Route
         }
 
         // Verify that the controller is valid.
-        if(!($instance = new $controller()) instanceof Controller){
+        if (!($instance = new $controller()) instanceof Controller) {
             throw new InvalidControllerException(
                 __("Invalid controller specified for route.")
             );
@@ -121,6 +165,6 @@ class Route
         // Share some additional information.
         $instance->setRequest($request);
 
-        return $instance->$action();
+        return $instance->$action(...$this->getParameterValues());
     }
 }
