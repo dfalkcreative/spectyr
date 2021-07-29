@@ -496,7 +496,7 @@ class App
     /**
      * Returns the debugger instance.
      *
-     * @return Debugger
+     * @return Debug
      */
     public static function debugger()
     {

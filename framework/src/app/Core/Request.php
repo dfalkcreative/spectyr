@@ -105,4 +105,25 @@ class Request
 
         return get($this->data, $key, $default);
     }
+
+
+    /**
+     * Returns a specific header.
+     *
+     * @param $key
+     * @param string $default
+     * @return string
+     */
+    public function getHeader($key, $default = '')
+    {
+        $headers = getallheaders();
+
+        foreach ($headers as $header => $value) {
+            if (!strcasecmp($header, $key)) {
+                return $value;
+            }
+        }
+
+        return $default;
+    }
 }

@@ -9,6 +9,14 @@ namespace App\Core;
  */
 class Debug
 {
+    public function __construct()
+    {
+        ini_set('xdebug.var_display_max_depth', -1);
+        ini_set('xdebug.var_display_max_children', -1);
+        ini_set('xdebug.var_display_max_data', -1);
+    }
+
+
     /**
      * Used to print a full dump of the specified variable.
      *
@@ -19,23 +27,6 @@ class Debug
         echo '<pre style="background: #eee;">';
         echo(var_dump($variable));
         echo '</pre>';
-
-        switch (true) {
-            case is_object($variable):
-                break;
-
-            case is_array($variable):
-                foreach ($variable as $key => $value) {
-                    $this->open($key);
-                    $this->print($value);
-                    $this->close();
-                }
-                break;
-
-            default:
-                $this->line(print_r($variable));
-                break;
-        }
     }
 
 
