@@ -46,7 +46,7 @@ function get($variable, $key, $default = '')
     if (is_array($variable) && isset($variable[$key])) {
         $value = $variable[$key];
 
-        if(is_string($value)){
+        if (is_string($value)) {
             return trim($value);
         }
 
@@ -139,6 +139,17 @@ function query()
 function request()
 {
     return App::getInstance()->getRouter()->getRequest();
+}
+
+
+/**
+ * Returns the assigned session handler.
+ *
+ * @return \App\Core\Session
+ */
+function session()
+{
+    return App::getInstance()->getSession();
 }
 
 

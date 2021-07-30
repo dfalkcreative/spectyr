@@ -273,7 +273,15 @@ class Router
             $callback = $this->getException(get_class($exception));
 
             if ($callback instanceof Closure) {
-                return $callback($exception);
+                $callback($exception);
+            }
+
+            if($this->getRequest()->isJson()){
+                return json([
+                    'status' => 'error',
+                    'exception' => $exception->getMessage() ?: '(no message)',
+                    'trace' => $exception->getTrace()
+                ])->render();
             }
 
             $view = view(self::EXCEPTION_TEMPLATE, [

@@ -10,6 +10,15 @@ namespace App\Core;
 class Request
 {
     /**
+     * Identifies the request method.
+     */
+    const METHOD_GET = 'GET';
+    const METHOD_PUT = 'PUT';
+    const METHOD_POST = 'POST';
+    const METHOD_DELETE = 'DELETE';
+
+
+    /**
      * The current URI.
      *
      * @var
@@ -125,5 +134,31 @@ class Request
         }
 
         return $default;
+    }
+
+
+    /**
+     * Returns the current request method.
+     *
+     * @return string
+     */
+    public function getMethod()
+    {
+        return get($_SERVER, 'REQUEST_METHOD', self::METHOD_GET);
+    }
+
+
+    /**
+     * Indicates whether or not the current request expects JSON.
+     *
+     * @return bool
+     */
+    public function isJson()
+    {
+        if (strpos($this->getHeader('Content-Type'), 'application/json') !== false) {
+            return true;
+        }
+
+        return false;
     }
 }
