@@ -125,8 +125,12 @@ function json($data)
  *
  * @return Query
  */
-function query()
+function query($table = '')
 {
+    if($table){
+        return (new Query())->table($table);
+    }
+
     return new Query();
 }
 
@@ -134,11 +138,29 @@ function query()
 /**
  * Returns the global request.
  *
- * @return \App\Core\Request
+ * @param $key
+ * @return mixed|\App\Core\Request
  */
-function request()
+function request($key = null)
 {
+    if ($key) {
+        return request()->get($key);
+    }
+
     return App::getInstance()->getRouter()->getRequest();
+}
+
+
+/**
+ * Returns a header key.
+ *
+ * @param $key
+ * @param string $default
+ * @return string
+ */
+function head($key, $default = '')
+{
+    return request()->getHeader($key, $default);
 }
 
 
