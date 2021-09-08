@@ -10,15 +10,27 @@ namespace App\Core;
 class Session
 {
     /**
+     * Indicates whether or not the session has been initialized.
+     *
+     * @var bool
+     */
+    protected $initialized = false;
+
+
+    /**
      * Initializes the session.
      */
     public function start()
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
+        if($this->isInitialized()){
+            return $this;
         }
 
-        return $this;
+        if (session_status() === PHP_SESSION_NONE) {
+            @session_start();
+        }
+
+        return $this->setInitialized(true);
     }
 
 
@@ -61,5 +73,30 @@ class Session
     public function get($key, $default = '')
     {
         return get($_SESSION, $key, $default);
+    }
+
+
+    /**
+     * Assigns the initialization status of the session.
+     *
+     * @param bool $flag
+     * @return $this
+     */
+    public function setInitialized($flag = false)
+    {
+        $this->initialized = $flag;
+
+        return $this;
+    }
+
+
+    /**
+     * Indicates whether or not the session has been initialized.
+     *
+     * @return bool
+     */
+    public function isInitialized()
+    {
+        return $this->initialized;
     }
 }
