@@ -147,7 +147,7 @@ function request($key = null)
         return request()->get($key);
     }
 
-    return App::getInstance()->getRouter()->getRequest();
+    return app()->getRouter()->getRequest();
 }
 
 
@@ -169,9 +169,13 @@ function head($key, $default = '')
  *
  * @return \App\Core\Session
  */
-function session()
+function session($key = null)
 {
-    return App::getInstance()->getSession();
+    if($key){
+        return session()->get($key);
+    }
+
+    return app()->getSession();
 }
 
 

@@ -155,6 +155,17 @@ class App
 
 
     /**
+     * Creates a new App instance.
+     *
+     * @return App
+     */
+    public static function create()
+    {
+        return new App();
+    }
+
+
+    /**
      * Used to load any environment variables.
      *
      * @return mixed

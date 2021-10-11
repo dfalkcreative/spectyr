@@ -2,8 +2,8 @@
 
 namespace App\Core;
 
-use App\Core\Exception\QueryException;
 use Exception;
+use App\Core\Exception\QueryException;
 
 /**
  * Class Query
@@ -187,7 +187,7 @@ class Query
      * Used to merge bindings.
      *
      * @param array $bindings
-     * @return Query
+     * @return $this
      */
     public function mergeBindings($bindings = [])
     {
@@ -207,7 +207,7 @@ class Query
      * @param $field
      * @param string $expression
      * @param string $value
-     * @return Query
+     * @return $this
      */
     public function where($field, $expression = '=', $value = '')
     {
@@ -420,7 +420,7 @@ class Query
 
         // Build out the appropriate SQL string.
         $columns = implode(', ', array_keys($values));
-        $bindings = implode(', ', array_map(function() {
+        $bindings = implode(', ', array_map(function () {
             return '?';
         }, $values));
 

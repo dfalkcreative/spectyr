@@ -50,6 +50,19 @@ class Route
 
 
     /**
+     * Creates a new Route instance.
+     *
+     * @param string $controller
+     * @param string $action
+     * @return Route
+     */
+    public static function create($controller = '', $action = '')
+    {
+        return new Route($controller, $action);
+    }
+
+
+    /**
      * Used to assign the controller.
      *
      * @param string $controller

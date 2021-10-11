@@ -95,26 +95,58 @@ class Request
 
 
     /**
-     * Returns a global request parameter.
+     * Returns a piece of information from the server data.
      *
      * @param $key
      * @param string $default
      * @return string
      */
-    public function get($key, $default = '')
+    public function server($key, $default = '')
     {
-        if (!$this->data) {
-            $_IN = json_decode(file_get_contents('php://input'), true) ?: [];
-
-            $this->data = array_merge($_SERVER, $this->data);
-            $this->data = array_merge($_POST, $this->data);
-            $this->data = array_merge($_GET, $this->data);
-            $this->data = array_merge($_IN, $this->data);
-        }
-
-        return get($this->data, $key, $default);
+        return get($_SERVER, $key, $default);
     }
 
+
+    /**
+     * Assigns a key into the request object.
+     *
+     * @param $key
+     * @param $value
+     * @return $this
+     */
+    public function set($key, $value)
+    {
+        $this->data[$key] = $value;
+
+        return $this;
+    }
+
+
+    /**
+     * Returns a global request parameter.
+     *
+     * @param $key
+     * @param string $default
+     * @return string
+     *
+     * @todo [High Priority] $_SERVER spoof vulnerability.
+     * Need to move the $_SERVER access elsewhere to prevent a potential spoof opportunity
+     * where a user might overwrite different parameters via form data.
+     */
+    public function get($key, $default = '')
+    {
+        if (!$this->getData()) {
+            $_IN = json_decode(file_get_contents('php://input'), true) ?: [];
+
+            $this->data = array_merge($_SERVER, $this->getData());
+            $this->data = array_merge($_POST, $this->getData());
+            $this->data = array_merge($_GET, $this->getData());
+            $this->data = array_merge($_IN, $this->getData());
+        }
+
+        return get($this->getData(), $key, $default);
+    }
+    
 
     /**
      * Returns a specific header.
